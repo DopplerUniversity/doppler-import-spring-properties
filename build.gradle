@@ -5,18 +5,14 @@
  * Learn more about Gradle by exploring our samples at https://docs.gradle.org/7.5/samples
  */
 
-plugins {
-    id 'application' 
-}
+apply plugin: 'application'
 
 repositories {
-    mavenCentral() 
+    mavenCentral()
 }
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.9.1'
 }
 
-application {
-    mainClass = 'doppler.DopplerPropertiesExport' 
-}
+mainClassName = 'doppler.DopplerPropertiesExport'

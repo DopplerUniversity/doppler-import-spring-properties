@@ -1,25 +1,23 @@
 package doppler;
 
-import java.io.File;
+import com.google.gson.Gson;
+
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
-import java.lang.System;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-class DopplerPropertiesExport {
+public class DopplerPropertiesExport {
 
     public static void main(String... args) {
         if (args.length == 0) {
-            System.err.println("usage: bash ImportSecrets.java /absolute/path/to/application.properties");
-            System.exit(1);
+            System.out.println("\n# Doppler Spring Properties Export script\n#");
+            System.out.println("# Make:   make export-properties FILE=\"./sample-application.properties\" > doppler-secrets.json");
+            System.out.println("# Maven:  ./mvnw compile exec:java --quiet -Dexec.args=\"./sample-application.properties\" > doppler-secrets.json");
+            System.out.println("# Gradle: ./gradlew run --quiet --args=\"./sample-application.properties\" > doppler-secrets.json\n#\n");
+            System.exit(0);
         }
         String propertiesFile = args[0];
         HashMap<String, String> secrets = new HashMap<>();
@@ -30,7 +28,7 @@ class DopplerPropertiesExport {
                 String envKey = convertPropertyToEnv((String) key);
                 String value = (String) val;
                 value = value.replaceAll("\\$\\{", "\\\\\\$\\\\{");
-                secrets.put(envKey, (String) value);
+                secrets.put(envKey, value);
 
             });
         } catch (IOException e) {
@@ -50,11 +48,10 @@ class DopplerPropertiesExport {
             props.load(propsFile);
             propsFile.close();
             return props;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            assert propsFile != null;
             propsFile.close();
         }
         return props;
@@ -62,7 +59,7 @@ class DopplerPropertiesExport {
     }
 
     public static String convertPropertyToEnv(String name) {
-        List<String> parts = new ArrayList<String>();
+        List<String> parts = new ArrayList<>();
         for (String key : name.split("\\.")) {
             parts.add((key.replaceAll("-", "")).toUpperCase());
         }
